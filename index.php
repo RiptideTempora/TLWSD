@@ -1,5 +1,4 @@
 <?php
-if($_SERVER['QUERY_STRING'] == 'XSS') { include "xssTest.php"; exit; }
 if($_POST['cookieToggle']) {
   if($_COOKIE['alwaysForward']) {
     setcookie('alwaysForward', 0);

@@ -82,7 +82,7 @@ if($_POST['time_scalar'] > 0) {
   $t = time() + (60 * 60 * 24 * 30); // Default: 30 days
 }
 
-$saltKey = openssl_random_pseudo_bytes(64); // 256 bit key for HMAC-SHA2
+$saltKey = openssl_random_pseudo_bytes(32); // 256 bit key for HMAC-SHA2
 
 $DB = new PDO("sqlite:".NONCE_ROOT."{$nonce}.ring"); // sqlite 3
   $DB->exec( "CREATE TABLE metadata (validUntil INTEGER, saltShaker TEXT);");
@@ -96,16 +96,10 @@ if(!preg_match('/^(http|ftp|https|irc):\/\//', $url)) {
 }
 $i = 1;
 foreach($_POST['passwds'] as $p) {
-  $salt = hash_hmac('sha256', $saltKey, $i, true);
-  $iKey = substr( hash_hmac('sha512', $p, $salt, true), 32);
-    // 32 bytes = 256 bits, encryption key
-  $iHash = substr( hash_hmac('sha512', $p, $salt, false), 0, 64);
-    // 64 hex digits = 256 bits, comparison hash
-  $iIV = hash_hmac('sha256', $p, $salt, true);
-    // 32 bytes = 256 bits, IV
-  $storeURL = AES256_Encrypt($url, $iKey, $iIV);
-  //echo("INSERT INTO rings (id, hash, ciphertext, validFlag) VALUES ('{$i}', '{$iHash}', '{$storeURL}', '1');\n");
-  $DB->exec("INSERT INTO rings (id, hash, ciphertext, validFlag) VALUES ('{$i}', '{$iHash}', '{$storeURL}', '1');");
+  $key = create_key($p, hash_hmac('sha256', $p, $i, 1), 'sha512' ); // Encryption key
+  $storeURL = AES256_Encrypt($url, $key); // Let this handle the IV
+  $passhash = create_hash($p);
+  $DB->exec("INSERT INTO rings (id, hash, ciphertext, validFlag) VALUES ('{$i}', '{$passhash}', '{$storeURL}', '1');");
   $i++;
 }
 $pageTitle = "Success!";

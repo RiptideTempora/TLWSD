@@ -2,22 +2,52 @@
 session_start();
 /*
  * Encryption Functions
- * AES-256-CBC, TwoFish-256-CBC
+ * AES-CTR, TwoFish-CTR
  * Initilization Vectors are stored in $_SESSION variables
  */
-    function AES256_Encrypt($sValue, $sSecretKey, $IV="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
+    function AES256_Encrypt($sValue, $sSecretKey, $IV=null)
     {
-      return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $sSecretKey, $sValue, MCRYPT_MODE_CBC, $IV)));
-    }	
-    function AES256_Decrypt($sValue, $sSecretKey, $IV="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
+      if(empty($IV)) {
+        $IV = mcrypt_create_iv(32, MCRYPT_DEV_URANDOM);
+      }
+      return implode('$', 
+               array(
+                 bin2hex($IV), 
+                 trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128,
+                         $sSecretKey, $sValue, MCRYPT_MODE_CTR, $IV)))
+               )
+               // TODO: HMAC
+             );
+    }
+    function AES256_Decrypt($sValue, $sSecretKey, $IV=null)
     {
-      return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CBC, $IV));
+      if(empty($IV)) {
+        // Strip it out
+        list($IV, $sValue) = explode('$', $sValue);
+      }
+      return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, $IV));
     }
-    function TwoFish_Encrypt($sValue, $sSecretKey, $IV) {
-      return trim(base64_encode(mcrypt_encrypt(MCRYPT_TWOFISH, $sSecretKey, $sValue, MCRYPT_MODE_CBC, $IV)));
+    function TwoFish_Encrypt($sValue, $sSecretKey, $IV=null)
+    {
+      if(empty($IV)) {
+        $IV = mcrypt_create_iv(32, MCRYPT_DEV_URANDOM);
+      }
+      return implode('$', 
+               array(
+                 bin2hex($IV), 
+                 trim(base64_encode(mcrypt_encrypt(MCRYPT_TWOFISH,
+                         $sSecretKey, $sValue, MCRYPT_MODE_CTR, $IV)))
+               )
+               // TODO: HMAC
+             );
     }
-    function TwoFish_Decrypt($sValue, $sSecretKey, $IV) {
-      return trim(mcrypt_decrypt(MCRYPT_TWOFISH, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CBC, $IV));
+    function TwoFish_Decrypt($sValue, $sSecretKey, $IV=null)
+    {
+      if(empty($IV)) {
+        // Strip it out
+        list($IV, $sValue) = explode('$', $sValue);
+      }
+      return trim(mcrypt_decrypt(MCRYPT_TWOFISH, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, $IV));
     }
 function shredData($file) {
   if(!file_exists($file)) return false;
@@ -46,23 +76,8 @@ function removeXSS($in) {
   $in = $matches[2];
   
   // Replace what we don't want to have in a URL
-  $in = str_replace('&', '&amp;', $in);
-  $in = str_replace('\\', '\\\\', $in);
-  $in = str_replace('<', '&lt;', $in);
-  $in = str_replace('"', '&quot;', $in);
-  $in = str_replace(':', '&#58;', $in);
-  $in = str_replace("'", "\\'", $in);
-  $in = str_replace('>', '&gt;', $in);
-  $in = preg_replace('/([^\x20-\x7F]+)/', '', $in); // Remove non-ASCII chars
-                                                    // and whitespace!
+  $in = htmlspecialchars($in, ENT_QUOTES | ENT_HTML5, 'UTF-8');
   
-  // You can replace this with a call to HTMLPurifier in your implementation;
-  // I haven't had the time to research XSS filters so I'm employing a basic one
-  // until my circumstances change.                 --@RiptideTempora
-  
-  // If anyone wants to submit some XSS proof-of-concept code, I encourage you
-  // to publish it openly as soon as you find it and just tweet me in the public
-  // disclosure.
   return $protocol.'://'.$in;
   // End result should be a URL
 }
@@ -99,13 +114,7 @@ function convBase($numberInput, $fromBaseInput, $toBaseInput)
     }
     return $retval;
 }
-function raw2hex($raw) {
-  $m = unpack('H*', $raw);
-  return $m[1];
-}
-function hex2raw($hex) { 
-  return pack('H*', $hex);
-}
+// Obsolete as of PHP 5.4
 
 include "conf.php";
 ?>

@@ -64,28 +64,18 @@ if(empty($_POST['password'])) {
     $url = "http://{$url}";
   }
 } else {
-  // 2012-09-07:
-  // Updated the passhash algorithm. Prior to today, this was the line of code
-  // that produced a hash for simple TLWSD links. Upgrade uses SHA-2 and bcrypt
-  // $passhash = substr(hash('sha512', $_POST['password']), 0, 64); // Hash
-  $cost = floor(10 + ((date('Ym') - 201204)/30)); // Increase by 1 every 30 months
-                                           // to conform to Moore's Law
-  $random = convBase(raw2hex(openssl_random_pseudo_bytes(33)), '0123456789abcdef', './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
-  if($random{23}) $random = substr($random, 0, 22);
-  $salt = "\$2a\${$cost}\${$random}";
-  $passhash = substr(hash('sha512', $_POST['password']), 0, 64); // Step 1: Part of SHA512
-  for($i = 1; $i <= 1000; $i++) { // Step 2: HMAC-SHA256 with an increasing key
-    $passhash = hash_hmac('sha256', $_POST['password'].$passhash, $i);
-  }
-  $passhash = crypt($passhash, $salt); // Bcrypt the final result -- new feature!
+  // 2013-12-24: Upgrade to PBKDF2
+  $passhash = create_hash($_POST['password']);
+  $key = create_key($_POST['password'],
+            hash('sha256', $_POST['password'], 1),
+            'sha512'
+         ); // Encryption key
   
-  $key = substr(hash('sha512', $_POST['password'], 1), 32); // Encryption key
-  $IV = hash('sha256', $_POST['password'], 1); // IV for 
   $url = $_POST['url'];
   if(!preg_match('/^(http|ftp|https|irc):\/\//', $url)) {
     $url = "http://{$url}";
   }
-  $url = AES256_Encrypt($url, $key, $IV);
+  $url = AES256_Encrypt($url, $key); // Let IV be handled by the function
 }
 if($_POST['time_scalar']) {
   switch($_POST['time_unit']) {
