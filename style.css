@@ -1,0 +1,148 @@
+/* 
+ * Stylesheet for This Link will Self Destruct
+ */
+ html, body {
+   height: 100%;
+   margin: auto;
+   min-height: 100% !important;
+ }
+ body {
+   background: #fff;
+   font-family: Calibri, Arial, sans-serif;
+ }
+ h1, h2, h3, h4, h5, h6, h7 {
+   margin-top: 0;
+   margin-bottom: 0;
+ }
+ p {
+   margin-bottom: 0;
+ }
+ ul {
+   margin-top: 0;
+   margin-bottom: 0;
+ }
+ #siteWrapper {
+   height: 100%;
+   margin: 0 0 -24px 0;
+ }
+ #header {
+   height: 120px;
+   background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, rgb(204,225,225)),
+    color-stop(1, rgb(76,146,225))
+  );
+  background-image: -moz-linear-gradient(
+    center top, 
+    rgb(204,225,225) 0%,
+    rgb(76,146,225) 100%
+  );
+  box-shadow: rgb(76,146,225) 0px 2px 2px;
+  width: 100%;
+ }
+ #headInner {
+   background-image: url('/linkaboom.png');
+   background-repeat: no-repeat;
+   background-position: top right;
+   width: 800px;
+   margin: auto;
+   height: 120px;
+ }
+ #navmenu {
+   margin: 56px 0 0 0;
+   padding: 0;
+   list-style: none;
+   vertical-align: top;
+ }
+ #navmenu li {
+   margin: 0 0 0 0.66em;
+   padding: 0;
+   display: inline-block;
+ }
+ #headInner a {
+   text-shadow: #ccf 0px 1px 1px;
+   color: #104;
+   font-family: "Book Antiqua", serif;
+   text-decoration: none;
+ }
+ #headInner a:hover {
+   text-shadow: #fff 0px 1px 2px;
+   color: #000;
+   font-family: "Book Antiqua", serif;
+   text-decoration: none;
+ }
+ #mainFieldset {
+   width: 640px;
+   margin: auto;
+ }
+ #content {
+   width: 800px;
+   margin: 4px auto 25px auto;
+   padding-bottom: 24px;
+ }
+ .aboutindent {
+   padding: 8px 24px;
+ }
+ .mono {
+     font-family: "Lucida Console", Monaco;
+ }
+ /* FOOTER */
+ #footer {
+   background: #fff;
+   position: fixed;
+   bottom: 0px;
+   box-shadow: inset #ccc 0px 12px 12px, #000 0px -1px 0px;
+   height: 24px;
+   padding: 0px 2px 0 2px;
+   width: 100%;
+ }
+ #footer table {
+   border-spacing: 0;
+   height: 24px;
+   width: 100%;
+ }
+ #footer td {
+   font-size: 10pt;
+ }
+ .devNote {
+   float: right;
+   color: #888;
+ }
+ .menu1sub {
+   margin: 0;
+   position: absolute;
+   padding: 0;
+   z-index: 10000;
+ }
+ ul.menu1sub {
+   background: #a0d0ff;
+   box-shadow: rgba(0,0,0,0.33) 0px 1px 3px, #fff 0px 0px 1px, #fff 0px 0px 1px, inset #fff 1px 1px 0, inset #fff -1px -1px 0, inset rgba(0, 102, 255, 0.2) 0px 0px 12px;
+   padding: 8px;
+   margin: 0;
+   width: 96px;
+ }
+ li.menu1sub, .menu1sub li {
+   border-color: #fff;
+   border-style: solid;
+   border-width: 0 0 1px 0;
+   display: block;
+   margin: 0;
+   text-align: center;
+   width: inherit;
+ }
+ li.menu1sub:last-child, .menu1sub li:last-child {
+   border: 0;
+ }
+ li.menu1sub:hover, .menu1sub li:hover {
+   background: rgba(224,255,255, 0.5);
+ }
+ a, .ajaxLink {
+   color: #00e;
+   cursor: pointer;
+   text-decoration: underline;
+ }
+ a:hover, .ajaxLink:hover {
+   color: #00d;
+ }
