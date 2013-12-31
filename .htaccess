@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Functional Redirects
+RewriteRule ^(\/u[A-Za-z0-9]+)$ /redir.php?req=$1 [L]
+RewriteRule ^(\/v[A-Za-z0-9]+)$ /ring.php?req=$1 [L]
+RewriteRule ^(u[A-Za-z0-9]+)$ /redir.php?req=%2F$1 [L]
+RewriteRule ^(v[A-Za-z0-9]+)$ /ring.php?req=%2F$1 [L]
+
+# Site navigation
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^\/([^\/]+)\/([^\/]+)\/?$ /switch.php?req=$1%2F$2 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^\/([^\/]+)\/?$ /switch.php?req=$1 [L]

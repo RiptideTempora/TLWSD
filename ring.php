@@ -8,7 +8,7 @@ if($_SERVER['SERVER_PORT'] != 443) {
   header("Location: /about/ssl");
   exit; // LOL NOPE
 }
-$req = substr($_GET['req'], 2);
+$req = substr($_GET['req'], 2); // Strip out /v from request URI
 if(!preg_match('/^[0-9a-z]{2,32}$/i', $req)) {
   header("Location: /404.php", false, 404);
   exit; // LOL NOPE
