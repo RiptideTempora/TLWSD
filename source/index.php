@@ -9,14 +9,9 @@ $torrent = 7513598; // ThePirateBay
   modify the code, and redistribute your modifications as you see fit. We would
   prefer that you keep any derivative software free and open source.
 </p>
-<p><strong>Latest Version</strong>: <a href="/source/tlwsd.zip">0.05</a> &mdash; <a href="https://thepiratebay.se/torrent/<?=$torrent;?>">Download as .torrent</a> (<a href="http://tpb.alpha7f.com/torrent/<?=$torrent;?>">TPB Proxy</a>) (<a href="https://kat.ph/this-link-will-self-destruct-v0-05-source-code-t6561546.html">Kat.ph</a>)</p>
-<p>Older Versions:
-<ul>
-    <li><a href="/source/tlwsd004.zip">0.04</a> &mdash; 30 June 2012</li>
-    <li><a href="/source/tlwsd003.zip">0.03</a> &mdash; 20 June 2012</li>
-    <li><a href="/source/tlwsd002.zip">0.02</a> &mdash; 05 May 2012</li>
-    <li><a href="/source/tlwsd001.zip">0.01</a> &mdash; 02 May 2012</li>
-</ul></p>
+<p>
+  <a href="https://github.com/RiptideTempora/TLWSD">Github</a>
+</p>
 <?php
 include_once "{$_SERVER['DOCUMENT_ROOT']}/includes/footer.php";
 ?>

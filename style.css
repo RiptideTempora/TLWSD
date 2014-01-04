@@ -146,3 +146,6 @@
  a:hover, .ajaxLink:hover {
    color: #00d;
  }
+ .error {
+   background-color: rgba(255, 0, 0, 0.33);
+ }

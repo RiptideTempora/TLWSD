@@ -17,6 +17,14 @@ include "header.php";
 </div>
 <h2>Development History</h2>
 <div class="aboutindent">
+    <div class="devNote">0.07-release</div>
+    <strong>3 January 2014 - Security Enhancements</strong>
+    <div class="aboutindent">
+        &bull; Use AES-256, not Rijndael-256.<br />
+        &bull; Use CTR mode, not CBC mode.<br />
+        &bull; Randomly generate the IV, don't derive it from the passphrase.<br />
+        &bull; Password hashing upgraded to PBKDF2.<br />
+    </div>
     <div class="devNote">0.06-release</div>
     <strong>7 September 2012 - Security Enhancements</strong>
     <div class="aboutindent">
