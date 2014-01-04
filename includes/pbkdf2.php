@@ -44,9 +44,9 @@ function create_hash($password)
     // format: algorithm:iterations:salt:hash
     $salt = base64_encode(mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
     return PBKDF2_HASH_ALGORITHM . ":" . PBKDF2_ITERATIONS . ":" .  $salt . ":" . 
-        base64_encode(create_key($password));
+        base64_encode(create_key($password, $salt, PBKDF2_HASH_ALGORITHM, PBKDF2_HASH_BYTE_SIZE));
 }
-function create_key($password, $salt = null, $alg = null)
+function create_key($password, $salt = null, $alg = null, $length = 32)
 {
     // Just give me a stretched key, don't format it as a hash
     if(empty($salt)) {
@@ -55,14 +55,14 @@ function create_key($password, $salt = null, $alg = null)
     if(empty($alg)) {
       $alg = PBKDF2_HASH_ALGORITHM;
     }
-    return pbkdf2(
+    return substr(pbkdf2(
             $alg,
             $password,
             $salt,
             PBKDF2_ITERATIONS,
             PBKDF2_HASH_BYTE_SIZE,
             true
-        );
+        ), 0, $length);
 }
 
 function validate_password($password, $correct_hash)

@@ -1,0 +1,3 @@
+# nginx rewrites for the actual app
+rewrite ^(/u[A-Za-z0-9]+) /redir.php?req=$1;
+rewrite ^(/v[A-Za-z0-9]+) /ring.php?req=$1;

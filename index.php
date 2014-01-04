@@ -1,6 +1,6 @@
 <?php
-if($_POST['cookieToggle']) {
-  if($_COOKIE['alwaysForward']) {
+if(!empty($_POST['cookieToggle'])) {
+  if(!empty($_COOKIE['alwaysForward'])) {
     setcookie('alwaysForward', 0);
   } else {
     setcookie('alwaysForward', 1);

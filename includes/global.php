@@ -1,5 +1,8 @@
 <?php
-session_start();
+if(!defined('GLOBAL_LOADED')) {
+  if(!session_id()) { 
+    session_start();
+  }
 /*
  * Encryption Functions
  * AES-CTR, TwoFish-CTR
@@ -8,13 +11,13 @@ session_start();
     function AES256_Encrypt($sValue, $sSecretKey, $IV=null)
     {
       if(empty($IV)) {
-        $IV = mcrypt_create_iv(32, MCRYPT_DEV_URANDOM);
+        $IV = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
       }
       return implode('$', 
                array(
-                 bin2hex($IV), 
+                 base64_encode($IV), 
                  trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128,
-                         $sSecretKey, $sValue, MCRYPT_MODE_CTR, $IV)))
+                         $sSecretKey, $sValue, 'ctr', $IV)))
                )
                // TODO: HMAC
              );
@@ -25,18 +28,18 @@ session_start();
         // Strip it out
         list($IV, $sValue) = explode('$', $sValue);
       }
-      return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, $IV));
+      return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $sSecretKey, base64_decode($sValue), 'ctr', base64_decode($IV) ));
     }
     function TwoFish_Encrypt($sValue, $sSecretKey, $IV=null)
     {
       if(empty($IV)) {
-        $IV = mcrypt_create_iv(32, MCRYPT_DEV_URANDOM);
+        $IV = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
       }
       return implode('$', 
                array(
-                 bin2hex($IV), 
+                 base64_decode($IV), 
                  trim(base64_encode(mcrypt_encrypt(MCRYPT_TWOFISH,
-                         $sSecretKey, $sValue, MCRYPT_MODE_CTR, $IV)))
+                         $sSecretKey, $sValue, 'ctr', $IV)))
                )
                // TODO: HMAC
              );
@@ -47,7 +50,7 @@ session_start();
         // Strip it out
         list($IV, $sValue) = explode('$', $sValue);
       }
-      return trim(mcrypt_decrypt(MCRYPT_TWOFISH, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, $IV));
+      return trim(mcrypt_decrypt(MCRYPT_TWOFISH, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, base64_decode($IV)) );
     }
 function shredData($file) {
   if(!file_exists($file)) return false;
@@ -114,7 +117,9 @@ function convBase($numberInput, $fromBaseInput, $toBaseInput)
     }
     return $retval;
 }
-// Obsolete as of PHP 5.4
 
-include "conf.php";
+include __DIR__."/conf.php";
+include __DIR__."/pbkdf2.php";
+  define('GLOBAL_LOADED', true);
+}
 ?>
