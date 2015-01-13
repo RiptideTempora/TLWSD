@@ -1,6 +1,6 @@
 <?php
-include "includes/global.php";
-ini_set("display_errors", "On");
+// include "includes/global.php";
+// ini_set("display_errors", "On");
 error_reporting(E_ALL & ~E_NOTICE);
 // DURING TESTING, UNCOMMENT ABOVE LINES
 if($_SERVER['SERVER_PORT'] != 443) {
@@ -34,21 +34,36 @@ if(!empty($_POST['password'])) {
   $found = false;
   //ob_start();
   //echo "{$saltKey}\n<pre>";
-  foreach($DB->query("SELECT * FROM rings") as $row) {
+  //ob_start();
+  
+  foreach($DB->query("SELECT * FROM rings", PDO::FETCH_ASSOC) as $row) {
     $i = intval($row['id']);
     $salt = hash_hmac('sha256', $saltKey, $i, true);
+    
+    //var_dump( [$row['ciphertext'], $row['hash'] ]);
     if(validate_password($_POST['password'], $row['hash'])) {
+      //$debug = ob_get_clean();
       // CORRECT PASSWORD:
       $found = true;
-      $key = create_key($_POST['password'], hash('sha256', $_POST['password'], 1), 'sha512' ); // Encryption key
-        // 32 bytes = 256 bits, encryption key
-      $newHash = hash('sha256', openssl_random_pseudo_bytes(64));
-      $url = AES256_Decrypt($row['ciphertext'], $key);
-    
-      $newCipher = base64_encode(openssl_random_pseudo_bytes(strlen(base64_decode($row['ciphertext'])))); // For replacing
+      $key = create_key(
+	      $_POST['password'],
+		  hash_hmac('sha256', $_POST['password'], $i, 1),
+		  'sha512'
+	  ); // Encryption key
+      $newHash = create_hash( openssl_random_pseudo_bytes(strlen($_POST['password'])) );
+	  
+	  list($IV, $ciphertext) = explode('$', $row['ciphertext']);
+      $url = AES256_Decrypt($ciphertext, $key, $IV);
+	  
+  	  $newCipher = AES256_Encrypt(
+	  	openssl_random_pseudo_bytes(strlen(base64_decode($ciphertext))),
+		openssl_random_pseudo_bytes(16)
+	  ); // For replacing
+	  
       $DB->exec("UPDATE rings SET validFlag = '0', ciphertext = '{$newCipher}', hash = '{$newHash}' WHERE id = '{$i}'");
       $numValid--;
-      if($numValid < 1) {
+      
+	  if($numValid < 1) {
         while(!shredData(NONCE_ROOT."{$req}.ring")) {
           // If it returns false, wait a few clock cycles
           usleep(1000);
@@ -56,17 +71,20 @@ if(!empty($_POST['password'])) {
       }
       // Overwrite
       //ob_end_clean();
-      if(!$_COOKIE['neverForward']) {
-        header("Location: {$data}");
+      //var_dump($debug); exit; 
+      if(!empty($_COOKIE['alwaysForward'])) {
+        header("Location: {$url}");
         die($url);
       } else {
-        $data = removeXSS($data); // Experimental; without warranty
+        
+        $url = removeXSS($url); // Experimental; without warranty
         include "includes/header.php";
-        echo "The destination URL is: <a href=\"".$data."\">".$data."</a>";
+        //var_dump($url);
+        echo "The destination URL is: <a href=\"".$url."\">".$url."</a>";
         include "includes/footer.php";
       }
       exit;
-    }
+	}
     //echo substr( hash_hmac('sha512', $_POST['password'], $salt, false), 0, 64)." != ".$row['hash']."\n"; // DEBUG
   }
   //echo "</pre>";
@@ -84,4 +102,3 @@ if(!empty($_POST['password'])) {
     include "includes/ring-pw.php";
     include "includes/footer.php";
 }
-?>

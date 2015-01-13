@@ -33,7 +33,7 @@ $array = explode("\n", file_get_contents(NONCE_ROOT."{$req}.nonce"));
     
 if($life > 0 && $timeMax >= time()) {
   if($passhash == 'nopass') {
-    if($_COOKIE['alwaysForward']) {
+    if(!empty($_COOKIE['alwaysForward'])) {
       $life--;
       if($life > 0) {
         file_put_contents(NONCE_ROOT."{$req}.nonce", "{$life}\n{$passhash}\n{$data}\n{$timeMax}");
@@ -50,7 +50,7 @@ if($life > 0 && $timeMax >= time()) {
       include "includes/footer.php";
     }
   } elseif(!empty($_POST['password'])) {
-    if(validate_password($_POST['password'], $passhash)) {
+    if(validate_password($_POST['password'], trim($passhash)) ) {
       $key = create_key($_POST['password'],
             hash('sha256', $_POST['password'], 1),
             'sha512'
@@ -65,7 +65,7 @@ if($life > 0 && $timeMax >= time()) {
             usleep(1000);
           }
         }
-      if($_COOKIE['alwaysForward']) {
+      if(!empty($_COOKIE['alwaysForward'])) {
         header("Location: {$data}");
       } else {
         $data = removeXSS($data); // Experimental; without warranty

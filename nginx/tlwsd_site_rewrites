@@ -1,0 +1,3 @@
+# nginx rewrites for the TLWSD info site
+rewrite ^(/?about/?.*)$ /switch.php?req=$1;
+rewrite ^(/?about)$ /switch.php?req=$1;

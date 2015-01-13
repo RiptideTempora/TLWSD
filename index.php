@@ -1,6 +1,6 @@
 <?php
-if($_POST['cookieToggle']) {
-  if($_COOKIE['alwaysForward']) {
+if(!empty($_POST['cookieToggle'])) {
+  if(!empty($_COOKIE['alwaysForward'])) {
     setcookie('alwaysForward', 0);
   } else {
     setcookie('alwaysForward', 1);
@@ -77,14 +77,14 @@ include_once "includes/header.php";
     </form>
     <form method="post">
         <fieldset>
-            Click this button to turn URL Preview <input name="cookieToggle" type="submit" value="<?=($_COOKIE['alwaysForward'] ? 'ON' : 'OFF');?>" />
+            Click this button to turn URL Preview <input name="cookieToggle" type="submit" value="<?=isset($_COOKIE['alwaysForward']) ? 'ON' : 'OFF';?>" />
         </fieldset>
     </form>
     </noscript>
 </div>
 <script type="text/javascript">
-    var label = '<?=($_COOKIE['alwaysForward'] ? 'ENABLE' : 'DISABLE');?>';
-    var current = '<?=($_COOKIE['alwaysForward'] ? 'Disabled' : 'Enabled');?>';
+    var label = '<?=!empty($_COOKIE['alwaysForward']) ? 'ENABLE' : 'DISABLE';?>';
+    var current = '<?=!empty($_COOKIE['alwaysForward']) ? 'Disabled' : 'Enabled';?>';
     function toggleURLPreview() {
       if(label == 'DISABLE') {
         document.cookie='alwaysForward=1';
@@ -103,5 +103,11 @@ include_once "includes/header.php";
 </script>
 
 <?php
+$key = openssl_random_pseudo_bytes(32);
+$cipher = AES256_Encrypt('test', $key);
+if(AES256_Decrypt($cipher, $key) !== 'test') {
+  die("DECRYPT BUGS");
+}
+echo strlen(base64_decode('8mYVNZG7K5GUhCF4ovItaQ=='));
 include_once "includes/footer.php";
 ?>

@@ -1,0 +1,56 @@
+server {
+        listen 80;
+        server_name tlwsd.info;
+        access_log /dev/null;
+        error_log /var/log/nginx/tlwsd.log;
+        index index.php;
+        root /var/www/tlwsd;
+        location / {
+          try_files $uri $uri/ =404;
+          include /etc/nginx/php.conf;
+        }
+        location ~ ^/?$ {
+          try_files $uri $uri/ index.php =404;
+          include /etc/nginx/php.conf;
+        }
+        include tlwsd_site_rewrites;
+}
+server {
+        listen 443;
+        server_name tlwsd.in;
+
+        ssl on;
+        ssl_certificate /etc/ssl/tlwsd.cert;
+        ssl_certificate_key /etc/ssl/private/tlwsd.key;
+        ssl_session_timeout 5m;
+        ssl_protocols TLSv1.1 TLSv1.2;
+        # Notice no TLSv1.0? Suck it up, bitches.
+        ssl_prefer_server_ciphers on;
+
+        include /etc/nginx/sslciphers.conf;
+
+        access_log /dev/null;
+        error_log /var/log/nginx/tlwsd_ssl.log;
+        index index.php;
+        root /var/www/tlwsd;
+
+        location / {
+          try_files $uri $uri/ =404;
+          include /etc/nginx/php.conf;
+        }
+        location ~ ^/?$ {
+          try_files $uri $uri/ index.php =404;
+          include /etc/nginx/php.conf;
+        }
+        include tlwsd_site_rewrites;
+        include tlwsd_base_rewrites;
+}
+server {
+        # Enforce HTTPS on the critical domain
+        listen 80;
+        access_log /dev/null;
+        server_name tlwsd.in;
+        location / {
+        }
+        rewrite     ^   https://tlwsd.in$request_uri? permanent;
+}

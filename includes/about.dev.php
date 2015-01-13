@@ -4,15 +4,10 @@ include "header.php";
 ?>
 <h2>Developer's Notes (To Do List)</h2>
 <div class="aboutindent">
-    <strong>Privacy</strong>
+    <strong>Features</strong>
     <div class="aboutindent">
-        <div class="devNote"><a href="https://ssl.alpha7f.com/txt/?ph=tlwsdGUI">Special Project</a></div>
-        &#x2717; Switch password-hashing & encryption to client-side?<br />
-    </div>
-    <strong>Testing</strong>
-    <div class="aboutindent">
-        <div class="devNote">Waiting for community response</div>
-        _ Test and improve the "Never Forward" XSS Filter<br />
+        <div class="devNote">Pending</div>
+        _ Optional cloak URLs &mdash; after a link has expired, add a fallback URL with N links. For deniability.<br />
     </div>
 </div>
 <h2>Development History</h2>
