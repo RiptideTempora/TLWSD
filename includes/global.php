@@ -1,8 +1,8 @@
 <?php
-if (!defined('GLOBAL_LOADED')) {
-    if (!session_id()) {
-        session_start();
-    }
+if(!defined('GLOBAL_LOADED')) {
+  if(!session_id()) { 
+    session_start();
+  }
     /*
      * Encryption Functions
      * AES-CTR, TwoFish-CTR
@@ -29,35 +29,25 @@ if (!defined('GLOBAL_LOADED')) {
     }
     function AES256_Decrypt($sValue, $sSecretKey, $IV = null)
     {
-        if (empty($IV)) {
-            // Strip it out
-            list($IV, $sValue) = explode('$', $sValue);
-			if (empty($IV)) {
-				$sValue = $IV;
-				$IV = str_repeat("\0", 16);
-			}
-        }
-        return trim(
-			mcrypt_decrypt(
-				MCRYPT_RIJNDAEL_128,
-				$sSecretKey,
-				base64_decode($sValue),
-				'ctr',
-				base64_decode($IV)
-			)
-		);
+      if(empty($IV)) {
+        $IV = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
+      }
+      return implode('$', 
+               array(
+                 base64_decode($IV), 
+                 trim(base64_encode(mcrypt_encrypt(MCRYPT_TWOFISH,
+                         $sSecretKey, $sValue, 'ctr', $IV)))
+               )
+               // TODO: HMAC
+             );
     }
     function TwoFish_Encrypt($sValue, $sSecretKey, $IV = null)
     {
-        if (empty($IV)) {
-            $IV = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
-        }
-        return implode('$', array(
-            base64_decode($IV),
-            trim(base64_encode(mcrypt_encrypt(MCRYPT_TWOFISH, $sSecretKey, $sValue, 'ctr', $IV)))
-        )
-        // TODO: HMAC
-            );
+      if(empty($IV)) {
+        // Strip it out
+        list($IV, $sValue) = explode('$', $sValue);
+      }
+      return trim(mcrypt_decrypt(MCRYPT_TWOFISH, $sSecretKey, base64_decode($sValue), MCRYPT_MODE_CTR, base64_decode($IV)) );
     }
     function TwoFish_Decrypt($sValue, $sSecretKey, $IV = null)
     {
@@ -171,8 +161,8 @@ if (!defined('GLOBAL_LOADED')) {
         }
         return $retval;
     }
-    
-    include __DIR__ . "/conf.php";
-    include __DIR__ . "/pbkdf2.php";
-    define('GLOBAL_LOADED', true);
+
+include __DIR__."/conf.php";
+include __DIR__."/pbkdf2.php";
+  define('GLOBAL_LOADED', true);
 }
